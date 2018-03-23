@@ -1,0 +1,9 @@
+-lib telehx
+-lib dotenv-hx
+-main Main
+-cp src
+-neko bin/NekoBotMain.n
+
+-resource res/types.json@JSONTypes
+-resource res/methods.json@JSONMethods
+-resource res/returns.json@JSONReturns
