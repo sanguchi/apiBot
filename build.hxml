@@ -1,9 +1,20 @@
 -lib telehx
 -lib dotenv-hx
+-D haxeJSON
+# -debug
+-dce no
 -main Main
 -cp src
+
+-resource res/types.json@TYPES
+-resource res/methods.json@METHODS
+-resource res/returns.json@RETURNS
+
+--each
+
 -neko bin/NekoBotMain.n
 
--resource res/types.json@JSONTypes
--resource res/methods.json@JSONMethods
--resource res/returns.json@JSONReturns
+--next
+
+-hl bin/HLBotMain.hl
+

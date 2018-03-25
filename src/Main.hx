@@ -1,5 +1,7 @@
 import telehx.TeleHxBot;
+import telehx.TeleHxTypes;
 import dotenv.Dotenv;
+using telehx.TeleHxMethods;
 
 class Main {
   var token: String;
@@ -13,28 +15,15 @@ class Main {
       trace("Token or Owner not set, please fix.");
       return;
     }
-    trace("Works!");
-    trace('Token: $token \nOwner: $owner');
     bot = new TeleHxBot(token);
     trace('bot started');
+    new BotHandler(bot);
     bot.getMe(function(user: HxUser){
       trace('Bot id: ${user.id}, username: @${user.username}');
     });
     trace("Sending message...");
     bot.sendMessage({chat_id: owner, text: "Bot started."}, function(message: HxMessage){
       trace('Message ${message.message_id} sent!');
-    });
-    bot.addHandler(function(update: HxUpdate): Bool {
-      switch update {
-        case {inline_query: {query: query}} if(): {
-          trace('Echoing message [${text}]');
-          bot.sendMessage({chat_id: update.message.chat.id, text: text});
-          return false;
-        }
-        case _ : {
-          return true;
-        }
-      }
     });
     trace('Entering idle mode.');
     bot.startPolling();
