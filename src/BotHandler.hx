@@ -4,7 +4,7 @@ using telehx.TeleHxMethods;
 class BotHandler {
 
   var bot: TeleHxBot;
-  var chunkResultSize: Int = 8;
+  var chunkResultSize: Int = 12;
   var apiDoc: APIDoc = new APIDoc();
   // var inlineHandler: HxUpdate -> Bool =
   public function startHandler(update: HxUpdate): Bool {
