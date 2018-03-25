@@ -50,7 +50,7 @@ class APIDoc {
   }
   // Generates an instance of Article to append to the result array.
   public function generateInlineQueryResultArticle(i: String, title: String, obj: Dynamic, ?details: Bool = false): HxInlineQueryResultArticle {
-    trace('[article]: details: $details');
+    // trace('[article]: details: $details');
     var content: HxInputMessageContent;
     if(details) {
       content = generateDetailsMessage(obj);

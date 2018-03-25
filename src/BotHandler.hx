@@ -75,21 +75,25 @@ class BotHandler {
         // Handle offsets using chunk size * offset.
         // if result is greater than array size, return array.
         // if result is less than array size, return subarray starting from result.
-        trace('Results after slice: ${response.length}');
+        trace('Results: ${response.length}');
         var cursor: Null<Int> = Std.parseInt(inline_query.offset);
         cursor = cursor != null? cursor : 0;
         if(response.length > chunkResultSize) {
-          response = response.slice(cursor * chunkResultSize, chunkResultSize);
-          if(response.length == chunkResultSize) {
+          trace('Splicing ${response.length} results: $cursor * $chunkResultSize');
+          response.splice(0, chunkResultSize * cursor); // = response.slice(cursor * chunkResultSize, chunkResultSize);
+          if(response.length >= chunkResultSize) {
+            response.splice(chunkResultSize, response.length - chunkResultSize);
             offset = Std.string(cursor + 1);
+            trace('incrementing offset to $offset');
           }
         }
-        trace('Results before slice: ${response.length}');
+        trace('Sending ${response.length} results');
+
         // Set offset based on array size.
         // If array is greater than chunk size, slice array
         // and set offset to received offset + 1 or 1 if offset was null.
 
-        trace('Setting offset to [$offset]');
+
         if(response.length == 0) {
           resultHeader = "Nothing found.";
         }
