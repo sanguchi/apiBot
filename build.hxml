@@ -11,10 +11,9 @@
 -resource res/returns.json@RETURNS
 
 --each
-
--neko bin/NekoBotMain.n
+-D server
+-neko bin/NekoBotServer.n
 
 --next
 
--hl bin/HLBotMain.hl
-
+-neko bin/NekoBotMain.n

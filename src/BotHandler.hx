@@ -1,6 +1,7 @@
 import telehx.TeleHxTypes;
 import telehx.TeleHxBot;
 using telehx.TeleHxMethods;
+import APIDoc;
 class BotHandler {
 
   var bot: TeleHxBot;
@@ -22,7 +23,7 @@ class BotHandler {
               reply_markup: {
                 inline_keyboard: [[{
                   text: "Test it",
-                  switch_inline_query_current_chat: "getMe",
+                  switch_inline_query_current_chat: "sendMessage",
                   }]]
                 },
               });
@@ -40,7 +41,86 @@ class BotHandler {
       }
     }
   }
-
+	
+	function callbackHandler(update: HxUpdate): Bool {
+		trace('[callbackHancler]: Handle update id: ${update.update_id}');
+		switch(update) {
+			case {callback_query: callback_query} if (callback_query != null): {
+				trace('Callback query received: [${callback_query.data}]');
+				var delimited: Int = callback_query.data.toLowerCase().indexOf(':');
+				if (callback_query.data.toLowerCase().indexOf(':') != -1) {
+					var action: String = callback_query.data.toLowerCase().substring(0, delimited);
+					var value: String = callback_query.data.substring(delimited +1);
+					trace('action: $action - value $value');
+					switch(action) {
+						case "details": {
+							trace('Building detail for value $value');
+							var methodTest: MethodDesc = apiDoc.getMethod(value);
+							var apiTypeTest: APIType = apiDoc.getType(value);
+							var descText: String;
+							if (methodTest != null) {
+								trace('Method detected: ${methodTest.method_name}');
+								descText = apiDoc.generateDetailsMessage(methodTest).message_text;
+							}
+							else if (apiTypeTest != null) {
+								trace('APIType detected: ${apiTypeTest.api_type_name}');
+								descText = apiDoc.generateDetailsMessage(apiTypeTest).message_text;
+							}
+							else {
+								trace('No result for $value');
+								return true;
+							}
+							var params: HxeditMessageText = {
+								inline_message_id: callback_query.inline_message_id,
+								text: descText,
+								parse_mode: "HTML",
+								reply_markup: {
+									inline_keyboard: [[{
+										text: "Back to summary",
+										callback_data: 'summary:$value',
+									}]]
+                },
+							};
+							TeleHxMethods.editMessageText(bot, params);
+						}
+						case "summary": {
+							trace('Building summary for value $value');
+							var methodTest: MethodDesc = apiDoc.getMethod(value);
+							var apiTypeTest: APIType = apiDoc.getType(value);
+							var descText: String;
+							var buttonText: String;
+							if (methodTest != null) {
+								descText = apiDoc.generateSummaryMessage(methodTest.method_name, null).message_text;
+								buttonText = "Method details";
+							}
+							else if (apiTypeTest != null) {
+								descText = apiDoc.generateSummaryMessage(null, apiTypeTest.api_type_name).message_text;
+								buttonText = "Object details";
+							}
+							else {
+								return true;
+							}
+							var params: HxeditMessageText = {
+								inline_message_id: callback_query.inline_message_id,
+								text: descText,
+								parse_mode: "HTML",
+								reply_markup: {
+									inline_keyboard: [[{
+										text: buttonText,
+										callback_data: 'details:$value',
+                  }]]
+                },
+							};
+							TeleHxMethods.editMessageText(bot, params);
+						}
+					}
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
   function inlineHandler(update: HxUpdate): Bool {
     trace('[inlineHandler]: Handle update id: ${update.update_id}');
     var resultHeader: String = "More info";
@@ -117,5 +197,6 @@ class BotHandler {
     this.bot = bot;
     this.bot.addHandler(this.startHandler);
     this.bot.addHandler(this.inlineHandler);
+		this.bot.addHandler(this.callbackHandler);
   }
 }
